@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <meta charset="utf-8" />
+    <style type="text/css">
+        #divTest {
+            width : 200px;
+            height : 200px;
+            background-color : red;
+            border : 1px solid #00ffff;
+            position : absolute; 
+            /* 被拖动的div的position属性值一定是absolute */
+        }
+    </style>
+</head>
+<body>
+    测试一下
+    <div id="divTest">
+        eiu
+    </div>
+
+    <script type="text/javascript">
+        var oDiv = document.getElementById("divTest");
+        oDiv.onmousedown = function (ev) {
+            var ev = ev || event; // 解决浏览器兼容问题
+            var disX = ev.clientX - oDiv.offsetLeft; //获取水平方向鼠标位置与div元素边框的间隔
+            var disY = ev.clientY - oDiv.offsetTop; //获取垂直方向鼠标位置与div元素边框的间隔
+            if (oDiv.setCapture) {
+                oDiv.setCapture();// 开始捕获鼠标位置
+            }
+
+            document.onmousemove = function (ev) { //鼠标移动事件
+                var ev = ev || event;
+                // 随意拖拽开始
+                // oDiv.style.top = ev.clientY - disY + 'px'; 
+                //设置垂直方向div元素的位置 clientY鼠标现在垂直的位置-鼠标相对与div元素边框的位置=现在div的垂直位置
+                // oDiv.style.left = ev.clientX - disX + 'px';
+                //随意推拽结束
+
+                // 会出现拖出屏幕外的情况，可以通过实时捕获鼠标位置来避免
+                // 开始
+                var leftW = ev.clientX - disX;
+                var leftH = ev.clientY - disY;
+                // 左边不超出
+                if(leftW < 0){
+                    leftW = 0;
+                }
+                // 上边不超出
+                if(leftH < 0 ){
+                    leftH = 0;
+                }
+                // 右边不超出
+                if(leftW > document.documentElement.clientWidth - oDiv.offsetWidth){
+                    leftW = document.documentElement.clientWidth - oDiv.offsetWidth;
+                }
+                // 下边不超出
+                if(leftH >  document.documentElement.clientHeight - oDiv.offsetHeight){
+                    leftH = document.documentElement.clientHeight - oDiv.offsetHeight;
+                }
+                oDiv.style.left = leftW + 'px';
+                oDiv.style.top = leftH + 'px'; 
+                // 结束
+            }
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                if (oDiv.releaseCapture) {
+                    oDiv.releaseCapture() // 释放鼠标捕获事件
+                }
+            }
+            return false;//阻止默认行为（如果页面中有文字，则会默认拖动文字），ie8及一下不行
+        }
+    </script>
+
+</body>
+</html>
